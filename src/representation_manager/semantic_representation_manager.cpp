@@ -58,9 +58,9 @@ namespace representation_manager{
 
 		auto instances = regions_register_->getInstances();
 		for (const auto & instance : instances){
-			semantic_map_->removeRegion(instance, *regions_register_);
+			// semantic_map_->removeRegion(instance, *regions_register_);
 		}
-		regions_register_->clear();
+		// regions_register_->clear();
 	}
 
 	void SemanticRepresentationManager::initialize(){
