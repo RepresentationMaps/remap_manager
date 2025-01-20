@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(representation_manager)
+project(remap_manager)
 
 # Global flags
 if(NOT CMAKE_CXX_STANDARD)
@@ -20,8 +20,8 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 
 # Targets
 ament_auto_add_library(${PROJECT_NAME}_lib
-  src/representation_manager/representation_manager.cpp
-  src/representation_manager/semantic_representation_manager.cpp
+  src/remap_manager/remap_manager.cpp
+  src/remap_manager/semantic_remap_manager.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}_lib)
@@ -29,8 +29,8 @@ target_link_libraries(${PROJECT_NAME}_lib)
 rosidl_target_interfaces(${PROJECT_NAME}_lib
   ${PROJECT_NAME} "rosidl_typesupport_cpp")
 
-ament_auto_add_executable(representation_manager_node
-  src/representation_manager_node.cpp
+ament_auto_add_executable(remap_manager_node
+  src/remap_manager_node.cpp
 )
 
 install(

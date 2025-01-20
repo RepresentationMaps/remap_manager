@@ -1,22 +1,22 @@
 <?xml version="1.0"?>
 <package format="3">
-  <name>representation_manager</name>
+  <name>remap_manager</name>
   <version>0.0.0</version>
-  <description>The representation plugins manager</description>
+  <description>The remap plugins manager</description>
 
-  <maintainer email="anon@anon.ymous">Anon Ymous</maintainer>
+  <maintainer email="lorenzo.ferrini@pal-robotics.com">Lorenzo Ferrini</maintainer>
 
   <license>Apache License 2.0</license>
 
-  <author email="anon@anon.ymous">Anon Ymous</author>
+  <author email="lorenzo.ferrini@pal-robotics.com">Lorenzo Ferrini</author>
 
   <buildtool_depend>ament_cmake_auto</buildtool_depend>
   <buildtool_depend>rosidl_default_generators</buildtool_depend>
 
   <depend>rclcpp</depend>
   <depend>pluginlib</depend>
-  <depend>representation_plugins</depend>
-  <depend>representation_plugin_base</depend>
+  <depend>remap_plugins</depend>
+  <depend>remap_plugin_base</depend>
   <depend>vdb2pc</depend>
 
   <exec_depend>rosidl_default_runtime</exec_depend>

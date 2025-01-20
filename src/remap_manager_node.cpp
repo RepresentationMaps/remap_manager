@@ -1,6 +1,6 @@
 #include <rclcpp/rclcpp.hpp>
 
-#include "representation_manager/semantic_representation_manager.hpp"
+#include "remap_manager/semantic_remap_manager.hpp"
 
 int main(int argc, char** argv){
 	rclcpp::init(argc, argv);
@@ -10,7 +10,7 @@ int main(int argc, char** argv){
 	float voxel_size = 0.1;
 	bool vertex_centered = false;
 
-	auto node = std::make_shared<representation_manager::SemanticRepresentationManager>(
+	auto node = std::make_shared<remap::manager::SemanticRemapManager>(
 			threaded, voxel_size, vertex_centered);
 
 	node->initialize();
