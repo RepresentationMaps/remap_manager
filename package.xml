@@ -13,10 +13,15 @@
   <buildtool_depend>ament_cmake_auto</buildtool_depend>
   <buildtool_depend>rosidl_default_generators</buildtool_depend>
 
+  <build_depend>libopenvdb-dev</build_depend>
+
+  <exec_depend>libopenvdb8.2</exec_depend>
+
   <depend>rclcpp</depend>
   <depend>pluginlib</depend>
-  <depend>remap_plugins</depend>
+  <depend>remap_msgs</depend>
   <depend>remap_plugin_base</depend>
+  <depend>remap_regions_register</depend>
   <depend>vdb2pc</depend>
 
   <exec_depend>rosidl_default_runtime</exec_depend>
