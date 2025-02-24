@@ -2,8 +2,8 @@
 Changelog for package remap_manager
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.1.0 (2025-02-24)
+------------------
 * making linters happy
 * renaming
 * removed continous reset of the grid
