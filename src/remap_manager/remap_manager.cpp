@@ -23,14 +23,14 @@ RemapManager::RemapManager()
   plugin_loader_("remap_plugin_base", "remap::plugins::PluginBase")
 {
   add_plugin_service_ = create_service<remap_msgs::srv::AddPlugin>(
-    "add_plugin",
+    "~/add_plugin",
     std::bind(
       &RemapManager::addPlugin,
       this,
       std::placeholders::_1,
       std::placeholders::_2));
   remove_plugin_service_ = create_service<remap_msgs::srv::RemovePlugin>(
-    "remove_plugin",
+    "~/remove_plugin",
     std::bind(
       &RemapManager::removePlugin,
       this,
