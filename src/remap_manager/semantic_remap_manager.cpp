@@ -72,6 +72,9 @@ void SemanticRemapManager::run()
     semantic_plugin.second->run();
   }
 
+  // Compute spatial relationships
+  semantic_map_->processRelationships(regions_register_);
+
   map_publisher_->publish(*(semantic_map_->getGridPtr()));
 
   auto instances = regions_register_->getInstances();
