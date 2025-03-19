@@ -18,7 +18,7 @@ This package also provides a ROS 2 node, `remap_manager_node`, initializing and 
 
 #### remap_manager_node
 
-This node initializes and spins a `SemanticRemapManager` object. It explicitly implements the ROS 2 interface for activating and deactivating reMap plugins.
+This node initializes and spins a `SemanticRemapManager` object, which implements the ROS 2 interface for activating and deactivating reMap plugins.
 This node might also subscribe to various other topics, depending on the activated plugins. All the plugins share this node's interface to subscribe to the required topics.
 Check each plugin documentation to verify which additional topics this node might subscribe to.
 
