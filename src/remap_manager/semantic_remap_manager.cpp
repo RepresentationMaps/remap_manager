@@ -19,12 +19,30 @@ namespace remap
 namespace manager
 {
 SemanticRemapManager::SemanticRemapManager(
-  const bool & threaded, const float & voxel_size, const bool & vertex_centered)
-: RemapManager(),
-  threaded_(threaded), voxel_size_(voxel_size), vertex_centered_(vertex_centered)
+  const bool & threaded,
+  const float & voxel_size,
+  const bool & vertex_centered,
+  const std::string & fixed_frame)
+: RemapManager()
 {
+  auto descriptor = rcl_interfaces::msg::ParameterDescriptor{};
+
+  descriptor.description = "VDB grid voxel size";
+  this->declare_parameter("voxel_size", voxel_size, descriptor);
+
+  descriptor.description = "VDB voxel centering";
+  this->declare_parameter("vertex_centered", vertex_centered, descriptor);
+
+  descriptor.description = "Semantic map refernce frame";
+  this->declare_parameter("fixed_frame", fixed_frame, descriptor);
+
+  threaded_ = threaded;
+  voxel_size_ = static_cast<float>(this->get_parameter("voxel_size").as_double());
+  vertex_centered_ = this->get_parameter("vertex_centered").as_bool();
+  fixed_frame_ = this->get_parameter("fixed_frame").as_string();
+
   semantic_map_ = std::make_shared<map_handler::SemanticMapHandler>(
-    threaded_, voxel_size_, vertex_centered_);
+    threaded_, voxel_size_, vertex_centered_, fixed_frame_);
 
   regions_register_ = std::make_shared<remap::regions_register::RegionsRegister>(threaded_);
 

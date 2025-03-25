@@ -6,10 +6,9 @@
 # copied or disclosed except in accordance with the terms of that agreement.
 
 from launch import LaunchDescription
-from launch.actions import EmitEvent, RegisterEventHandler
-from launch.events import matches_action
 from launch_pal import get_pal_configuration
 from launch_ros.actions import Node
+
 
 def generate_launch_description():
     pkg = 'remap_manager'

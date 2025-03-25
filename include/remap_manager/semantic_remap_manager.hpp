@@ -38,6 +38,7 @@ class SemanticRemapManager : public RemapManager
   bool threaded_;
   float voxel_size_;
   bool vertex_centered_;
+  std::string fixed_frame_;
 
   std::shared_ptr<remap::map_handler::SemanticMapHandler> semantic_map_;
   std::shared_ptr<remap::regions_register::RegionsRegister> regions_register_;
@@ -61,7 +62,10 @@ protected:
 
 public:
   SemanticRemapManager(
-    const bool & threaded, const float & voxel_size_, const bool & vertex_centered);
+    const bool & threaded = false,
+    const float & voxel_size_ = 0.1,
+    const bool & vertex_centered = true,
+    const std::string & fixed_frame = "map");
   void initialize();
 };
 }  // namespace manager
