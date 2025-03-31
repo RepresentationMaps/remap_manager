@@ -26,6 +26,14 @@ Check each plugin documentation to verify which additional topics this node migh
 
 `ros2 run remap_manager remap_manager_node`
 
+##### Launch files
+
+`remap_manager.launch.py`: launches the `remap_manager_node`.
+
+##### Topics
+
+- `/remap/world` ([`sensor_msgs::msg::PointCloud2`](https://docs.ros2.org/foxy/api/sensor_msgs/msg/PointCloud2.html)): the full reMap grid, published as a point cloud.
+
 ##### Services
 
 - `/remap_manager/activate_plugin` ([`remap_msgs/srv/AddPlugin`](https://gitlab.pal-robotics.com/interaction/remap_msgs/-/blob/main/srv/AddPlugin.srv?ref_type=heads)): 
