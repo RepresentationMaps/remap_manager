@@ -93,6 +93,13 @@ void SemanticRemapManager::run()
   // Compute spatial relationships
   semantic_map_->processRelationships(regions_register_);
 
+  for (auto & semantic_plugin : semantic_plugins_) {
+    semantic_plugin.second->storeRegionsRelationships(
+      semantic_map_->getRegionsRelationshipMatrix());
+    semantic_plugin.second->storeEntitiesRelationships(
+      semantic_map_->getEntitiesRelationshipMatrix());
+  }
+
   map_publisher_->publish(*(semantic_map_->getGridPtr()));
 
   auto instances = regions_register_->getInstances();
@@ -102,8 +109,8 @@ void SemanticRemapManager::initialize()
 {
   map_publisher_ = std::make_shared<vdb2pc::ros_utils::VDB2PCPublisher<openvdb::Int32Grid>>(
     shared_from_this(),
-    "/remap/test_grid",
-    "map");
+    "/remap/world",
+    fixed_frame_);
 }
 }  // namespace manager
 }  // namespace remap
