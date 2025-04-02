@@ -20,6 +20,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include <remap_map_handler/semantic_map_handler.hpp>
 
@@ -49,6 +50,12 @@ class SemanticRemapManager : public RemapManager
 
   rclcpp::TimerBase::SharedPtr timer_;
   int period_ms_;
+
+  std::vector<std::string> default_plugins_;
+
+  void instatiateNewPlugin(
+    const std::string & plugin_name,
+    const bool & threaded);
 
 protected:
   void addPlugin(

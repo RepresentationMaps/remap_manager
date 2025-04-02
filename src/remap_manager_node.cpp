@@ -12,9 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <chrono>
+#include <thread>
+
 #include <rclcpp/rclcpp.hpp>
 
 #include "remap_manager/semantic_remap_manager.hpp"
+
+using namespace std::chrono_literals;
 
 int main(int argc, char ** argv)
 {
@@ -26,6 +31,8 @@ int main(int argc, char ** argv)
 
   auto node = std::make_shared<remap::manager::SemanticRemapManager>(
     threaded, voxel_size, vertex_centered);
+
+  std::this_thread::sleep_for(1s);
 
   node->initialize();
 

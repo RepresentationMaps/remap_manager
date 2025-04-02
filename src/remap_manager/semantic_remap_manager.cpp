@@ -36,10 +36,14 @@ SemanticRemapManager::SemanticRemapManager(
   descriptor.description = "Semantic map refernce frame";
   this->declare_parameter("fixed_frame", fixed_frame, descriptor);
 
+  descriptor.description = "Plugins run at startup";
+  this->declare_parameter("default_plugins", std::vector<std::string>(), descriptor);
+
   threaded_ = threaded;
   voxel_size_ = static_cast<float>(this->get_parameter("voxel_size").as_double());
   vertex_centered_ = this->get_parameter("vertex_centered").as_bool();
   fixed_frame_ = this->get_parameter("fixed_frame").as_string();
+  default_plugins_ = this->get_parameter("default_plugins").as_string_array();
 
   semantic_map_ = std::make_shared<map_handler::SemanticMapHandler>(
     threaded_, voxel_size_, vertex_centered_, fixed_frame_);
@@ -51,21 +55,29 @@ SemanticRemapManager::SemanticRemapManager(
     std::bind(&SemanticRemapManager::run, this));
 }
 
+void SemanticRemapManager::instatiateNewPlugin(
+  const std::string & plugin_name,
+  const bool & threaded)
+{
+  RepPluginPtr plugin =
+    plugin_loader_.createSharedInstance(std::string("") + (plugin_name.c_str()));
+  SemanticPluginPtr semantic_plugin =
+    std::dynamic_pointer_cast<remap::plugins::SemanticPlugin>(plugin);
+  RCLCPP_INFO(get_logger(), "Adding plugin %s", plugin_name.c_str());
+  semantic_plugin->setup(shared_from_this(), plugin_name, threaded);
+  semantic_plugin->initializeSimulationStructures();
+  semantic_plugin->initialize();
+  semantic_plugin->setSemanticMapHandler(semantic_map_);
+  semantic_plugin->setRegionsRegister(regions_register_);
+  semantic_plugins_[plugin_name] = semantic_plugin;
+}
+
 void SemanticRemapManager::addPlugin(
   const std::shared_ptr<remap_msgs::srv::AddPlugin::Request> request,
   std::shared_ptr<remap_msgs::srv::AddPlugin::Response> response)
 {
   if (semantic_plugins_.find(request->plugin_name) == semantic_plugins_.end()) {
-    RepPluginPtr plugin =
-      plugin_loader_.createSharedInstance(std::string("") + (request->plugin_name.c_str()));
-    SemanticPluginPtr semantic_plugin = std::dynamic_pointer_cast<remap::plugins::SemanticPlugin>(
-      plugin);
-    semantic_plugin->setup(shared_from_this(), request->plugin_name, request->threaded);
-    semantic_plugin->initializeSimulationStructures();
-    semantic_plugin->initialize();
-    semantic_plugin->setSemanticMapHandler(semantic_map_);
-    semantic_plugin->setRegionsRegister(regions_register_);
-    semantic_plugins_[request->plugin_name] = semantic_plugin;
+    instatiateNewPlugin(request->plugin_name, request->threaded);
     response->success = true;
   } else {
     response->success = false;
@@ -111,6 +123,12 @@ void SemanticRemapManager::initialize()
     shared_from_this(),
     "/remap/world",
     fixed_frame_);
+
+  for (auto & plugin_name : default_plugins_) {
+    if (plugin_name.size() != 0) {
+      instatiateNewPlugin(plugin_name, threaded_);
+    }
+  }
 }
 }  // namespace manager
 }  // namespace remap
