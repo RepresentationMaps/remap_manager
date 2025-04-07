@@ -2,6 +2,20 @@
 Changelog for package remap_manager
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* enabling default plugins
+* update README
+* making linters happy
+* supporting launch and configuration parameters
+* wip
+* fix typo
+* updated README.md
+* computing spatial relationships
+* update README
+* using node namespace for services
+* Contributors: Lorenzo Ferrini
+
 0.1.0 (2025-02-24)
 ------------------
 * making linters happy
