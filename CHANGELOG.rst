@@ -2,8 +2,8 @@
 Changelog for package remap_manager
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.2.0 (2025-04-07)
+------------------
 * enabling default plugins
 * update README
 * making linters happy
