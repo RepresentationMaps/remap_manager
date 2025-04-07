@@ -41,3 +41,12 @@ interface to activate a certain reMap plugin. It returns a boolean, representing
 
 - `/remap_manager/remove_plugin` ([`remap_msgs/srv/AddPlugin`](https://gitlab.pal-robotics.com/interaction/remap_msgs/-/blob/main/srv/RemovePlugin.srv?ref_type=heads)):
 interface to deactivate a certain reMap plugin. It returns a boolean, representing deactivation success.
+
+##### Parameters
+
+- `voxel_size` (`double`, default: `0.1`): size of the voxel (in meters) used to create the 3D grid.
+- `vertex_centered` (`bool`, default: `false`): whether the VDB grid is vertex centered. For more information about the difference between vertex and cell centering, check [OpenVDB documentation](https://www.openvdb.org/documentation/doxygen/transformsAndMaps.html#sCellVsVertex).
+- `fixed_frame` (`string`, default: `map`): the fixed frame used by the `remap::map_handler::SemantiMapHandler` instatiated by the manager. This is the reference frame to be used by the plugins in order to achieve a coherent representation in space of the uploaded entities.
+- `default_plugins` (`vector<string>`, default: `[]`): list of plugins to be activated by default when the node is launched.
+
+
