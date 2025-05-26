@@ -77,9 +77,17 @@ void SemanticRemapManager::addPlugin(
   std::shared_ptr<remap_msgs::srv::AddPlugin::Response> response)
 {
   if (semantic_plugins_.find(request->plugin_name) == semantic_plugins_.end()) {
+    if (!plugin_loader_.isClassAvailable(request->plugin_name)) {
+      RCLCPP_ERROR(
+        get_logger(), "Plugin %s not found in available classes", request->plugin_name.c_str());
+      response->success = false;
+      return;
+    }
     instatiateNewPlugin(request->plugin_name, request->threaded);
     response->success = true;
   } else {
+    RCLCPP_WARN(
+      get_logger(), "Plugin %s already uploaded", request->plugin_name.c_str());
     response->success = false;
   }
 }

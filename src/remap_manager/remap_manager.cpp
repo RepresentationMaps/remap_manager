@@ -43,6 +43,12 @@ void RemapManager::addPlugin(
   std::shared_ptr<remap_msgs::srv::AddPlugin::Response> response)
 {
   if (plugins_.find(request->plugin_name) == plugins_.end()) {
+    if (!plugin_loader_.isClassAvailable(request->plugin_name)) {
+      RCLCPP_ERROR(
+        get_logger(), "Plugin %s not found in available classes", request->plugin_name.c_str());
+      response->success = false;
+      return;
+    }
     RepPluginPtr plugin = plugin_loader_.createSharedInstance(
       std::string("") + (request->plugin_name.c_str()));
     plugin->setup(shared_from_this(), request->plugin_name, request->threaded);
@@ -50,6 +56,8 @@ void RemapManager::addPlugin(
     plugins_[request->plugin_name] = plugin;
     response->success = true;
   } else {
+    RCLCPP_WARN(
+      get_logger(), "Plugin %s already uploaded", request->plugin_name.c_str());
     response->success = false;
   }
 }
