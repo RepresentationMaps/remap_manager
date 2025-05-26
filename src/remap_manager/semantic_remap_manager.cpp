@@ -66,9 +66,9 @@ void SemanticRemapManager::instatiateNewPlugin(
   RCLCPP_INFO(get_logger(), "Adding plugin %s", plugin_name.c_str());
   semantic_plugin->setup(shared_from_this(), plugin_name, threaded);
   semantic_plugin->initializeSimulationStructures();
-  semantic_plugin->initialize();
   semantic_plugin->setSemanticMapHandler(semantic_map_);
   semantic_plugin->setRegionsRegister(regions_register_);
+  semantic_plugin->initialize();
   semantic_plugins_[plugin_name] = semantic_plugin;
 }
 
