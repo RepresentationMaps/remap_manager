@@ -20,6 +20,7 @@
   <depend>rclcpp</depend>
   <depend>pluginlib</depend>
   <depend>remap_msgs</depend>
+  <depend>remap_map_handler</depend>
   <depend>remap_plugin_base</depend>
   <depend>remap_regions_register</depend>
   <depend>vdb2pc</depend>
