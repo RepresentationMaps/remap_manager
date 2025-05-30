@@ -133,8 +133,16 @@ void SemanticRemapManager::initialize()
     fixed_frame_);
 
   for (auto & plugin_name : default_plugins_) {
-    if (plugin_name.size() != 0) {
+    bool plugin_available = plugin_loader_.isClassAvailable(plugin_name);
+    bool plugin_not_loaded = semantic_plugins_.find(plugin_name) == semantic_plugins_.end();
+    if ((plugin_name.size() != 0) && plugin_available && plugin_not_loaded) {
       instatiateNewPlugin(plugin_name, threaded_);
+    } else if (!plugin_available) {
+      RCLCPP_ERROR(
+        get_logger(), "Default plugin %s not found in available classes", plugin_name.c_str());
+    } else if (!plugin_not_loaded) {
+      RCLCPP_WARN(
+        get_logger(), "Default plugin %s already uploaded", plugin_name.c_str());
     }
   }
 }
