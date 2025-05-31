@@ -3,3 +3,4 @@
     voxel_size: 0.1
     vertex_centered: false
     fixed_frame: "map"
+    default_plugins: [""]
