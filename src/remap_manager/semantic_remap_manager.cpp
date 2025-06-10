@@ -59,17 +59,19 @@ void SemanticRemapManager::instatiateNewPlugin(
   const std::string & plugin_name,
   const bool & threaded)
 {
+  RCLCPP_INFO(get_logger(), "Adding plugin %s", plugin_name.c_str());
   RepPluginPtr plugin =
     plugin_loader_.createSharedInstance(std::string("") + (plugin_name.c_str()));
   SemanticPluginPtr semantic_plugin =
     std::dynamic_pointer_cast<remap::plugins::SemanticPlugin>(plugin);
-  RCLCPP_INFO(get_logger(), "Adding plugin %s", plugin_name.c_str());
+  semantic_plugin->setPluginNodeOptions(plugin_node_options_);
   semantic_plugin->setup(shared_from_this(), plugin_name, threaded);
   semantic_plugin->initializeSimulationStructures();
   semantic_plugin->setSemanticMapHandler(semantic_map_);
   semantic_plugin->setRegionsRegister(regions_register_);
   semantic_plugin->initialize();
   semantic_plugins_[plugin_name] = semantic_plugin;
+  RCLCPP_INFO(get_logger(), "Added plugin %s", plugin_name.c_str());
 }
 
 void SemanticRemapManager::addPlugin(

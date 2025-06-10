@@ -32,6 +32,20 @@ int main(int argc, char ** argv)
   auto node = std::make_shared<remap::manager::SemanticRemapManager>(
     threaded, voxel_size, vertex_centered);
 
+  rclcpp::NodeOptions plugin_node_options;
+
+  std::vector<std::string> node_arguments = plugin_node_options.arguments();
+  for (int i = 1; i < argc; ++i) {
+    if (node_arguments.empty() && std::string(argv[i]) != "--ros-args") {
+      // A simple way to reject non ros args
+      continue;
+    }
+    node_arguments.push_back(argv[i]);
+  }
+  plugin_node_options.arguments(node_arguments);
+
+  node->setPluginNodeOptions(plugin_node_options);
+
   std::this_thread::sleep_for(1s);
 
   node->initialize();

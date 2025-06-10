@@ -41,6 +41,8 @@ class SemanticRemapManager : public RemapManager
   bool vertex_centered_;
   std::string fixed_frame_;
 
+  rclcpp::NodeOptions plugin_node_options_;
+
   std::shared_ptr<remap::map_handler::SemanticMapHandler> semantic_map_;
   std::shared_ptr<remap::regions_register::RegionsRegister> regions_register_;
 
@@ -74,6 +76,9 @@ public:
     const bool & vertex_centered = true,
     const std::string & fixed_frame = "map");
   void initialize();
+  void setPluginNodeOptions(const rclcpp::NodeOptions & node_options) {
+    plugin_node_options_ = node_options;
+  }
 };
 }  // namespace manager
 }  // namespace remap
