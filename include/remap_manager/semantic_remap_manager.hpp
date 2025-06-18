@@ -76,7 +76,8 @@ public:
     const bool & vertex_centered = true,
     const std::string & fixed_frame = "map");
   void initialize();
-  void setPluginNodeOptions(const rclcpp::NodeOptions & node_options) {
+  void setPluginNodeOptions(const rclcpp::NodeOptions & node_options)
+  {
     plugin_node_options_ = node_options;
   }
 };
