@@ -2,8 +2,8 @@
 Changelog for package remap_manager
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.3.0 (2025-06-18)
+------------------
 * making linters happy
   Lint whispers gently,
   Trailing commas in the breeze—
