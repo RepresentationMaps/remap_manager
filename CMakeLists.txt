@@ -53,4 +53,4 @@ endif()
 
 ament_index_register_resource("pal_configuration.remap_manager" CONTENT config/00-defaults.yml)
 
-ament_auto_package(INSTALL_TO_SHARE config launch)
+ament_auto_package(USE_SCOPED_HEADER_INSTALL_DIR INSTALL_TO_SHARE config launch)
