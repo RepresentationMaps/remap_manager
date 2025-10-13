@@ -2,8 +2,8 @@
 Changelog for package remap_manager
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.3.1 (2025-10-13)
+------------------
 * Fix ament_auto warning about headers install destination
 * Contributors: Noel Jimenez
 
