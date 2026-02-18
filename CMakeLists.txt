@@ -10,9 +10,14 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-list(APPEND CMAKE_MODULE_PATH "/usr/lib/x86_64-linux-gnu/cmake/OpenVDB")
-
 find_package(ament_cmake_auto REQUIRED)
+
+# Find TBB via its system config BEFORE OpenVDB, to prevent OpenVDB's
+# bundled FindTBB.cmake from creating a partial TBB::tbb target that
+# later conflicts with the full TBB target set expected by VTK/PCL.
+find_package(TBB CONFIG REQUIRED)
+
+list(APPEND CMAKE_MODULE_PATH "/usr/lib/${CMAKE_LIBRARY_ARCHITECTURE}/cmake/OpenVDB")
 find_package(OpenVDB MODULE REQUIRED)
 ament_auto_find_build_dependencies()
 
