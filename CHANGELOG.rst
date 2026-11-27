@@ -2,6 +2,18 @@
 Changelog for package remap_manager
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Publish the grid as a compressed vdb_msgs/VdbGrid on /remap/world/vdb
+  The grid with its region -> entities legend, for rviz_vdb_plugins: a cheap
+  snapshot in the mapping cycle (only when someone subscribes, at most
+  vdb_rate_hz, default 2), pruned, serialised (OpenVDB stream, Blosc by
+  default: vdb_compression) and published by a worker thread, latched.
+  Measured on the table-top sim (316k voxels at 2 cm): 406 kB per grid,
+  0.76 MB/s, against 5 MB per PointCloud2 and 39 MB/s on /remap/world.
+  Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+* Contributors: Séverin Lemaignan
+
 0.3.2 (2026-02-18)
 ------------------
 * compat with jazzy
