@@ -2,8 +2,8 @@
 Changelog for package remap_manager
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.4.0 (2026-11-27)
+------------------
 * Publish the grid as a compressed vdb_msgs/VdbGrid on /remap/world/vdb
   The grid with its region -> entities legend, for rviz_vdb_plugins: a cheap
   snapshot in the mapping cycle (only when someone subscribes, at most
