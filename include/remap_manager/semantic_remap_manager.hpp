@@ -17,14 +17,18 @@
 
 #include <openvdb/openvdb.h>
 
+#include <condition_variable>
 #include <map>
 #include <memory>
+#include <mutex>
 #include <string>
+#include <thread>
 #include <vector>
 
 #include <remap_map_handler/semantic_map_handler.hpp>
 
 #include <vdb2pc/vdb2pc_publisher.hpp>
+#include <vdb_msgs/msg/vdb_grid.hpp>
 
 #include "remap_manager/remap_manager.hpp"
 
@@ -53,6 +57,24 @@ class SemanticRemapManager : public RemapManager
   rclcpp::TimerBase::SharedPtr timer_;
   int period_ms_;
 
+  // The grid as a compressed vdb_msgs/VdbGrid (+ region -> entities legend),
+  // for rviz_vdb_plugins: snapshot in the mapping cycle, serialised and
+  // published by a worker thread, at most vdb_rate_hz, only with subscribers.
+  rclcpp::Publisher<vdb_msgs::msg::VdbGrid>::SharedPtr vdb_publisher_;
+  double vdb_rate_hz_;
+  std::string vdb_compression_;
+  rclcpp::Time last_vdb_publish_;
+  uint32_t vdb_sequence_ = 0;
+  std::thread vdb_worker_;
+  std::mutex vdb_mutex_;
+  std::condition_variable vdb_cv_;
+  bool vdb_busy_ = false;
+  bool vdb_stop_ = false;
+  openvdb::Int32Grid::Ptr vdb_snapshot_;
+  std::map<int64_t, std::vector<std::string>> vdb_legend_;
+  void snapshotVdbGrid();
+  void vdbWorker();
+
   std::vector<std::string> default_plugins_;
 
   void instatiateNewPlugin(
@@ -75,6 +97,7 @@ public:
     const float & voxel_size_ = 0.1,
     const bool & vertex_centered = true,
     const std::string & fixed_frame = "map");
+  ~SemanticRemapManager() override;
   void initialize();
   void setPluginNodeOptions(const rclcpp::NodeOptions & node_options)
   {

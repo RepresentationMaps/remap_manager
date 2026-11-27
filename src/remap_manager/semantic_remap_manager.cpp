@@ -14,6 +14,10 @@
 
 #include "remap_manager/semantic_remap_manager.hpp"
 
+#include <openvdb/tools/Prune.h>
+
+#include <vdb_ros/conversions.hpp>
+
 namespace remap
 {
 namespace manager
@@ -39,11 +43,18 @@ SemanticRemapManager::SemanticRemapManager(
   descriptor.description = "Plugins run at startup";
   this->declare_parameter("default_plugins", std::vector<std::string>(), descriptor);
 
+  descriptor.description = "Rate of the compressed grid (vdb_msgs/VdbGrid) on /remap/world/vdb";
+  this->declare_parameter("vdb_rate_hz", 2.0, descriptor);
+  descriptor.description = "Compression of the VdbGrid: blosc, zip or none";
+  this->declare_parameter("vdb_compression", std::string("blosc"), descriptor);
+
   threaded_ = threaded;
   voxel_size_ = static_cast<float>(this->get_parameter("voxel_size").as_double());
   vertex_centered_ = this->get_parameter("vertex_centered").as_bool();
   fixed_frame_ = this->get_parameter("fixed_frame").as_string();
   default_plugins_ = this->get_parameter("default_plugins").as_string_array();
+  vdb_rate_hz_ = this->get_parameter("vdb_rate_hz").as_double();
+  vdb_compression_ = this->get_parameter("vdb_compression").as_string();
 
   semantic_map_ = std::make_shared<map_handler::SemanticMapHandler>(
     threaded_, voxel_size_, vertex_centered_, fixed_frame_);
@@ -123,12 +134,103 @@ void SemanticRemapManager::run()
   }
 
   map_publisher_->publish(*(semantic_map_->getGridPtr()));
+  snapshotVdbGrid();
 
   auto instances = regions_register_->getInstances();
 }
 
+SemanticRemapManager::~SemanticRemapManager()
+{
+  {
+    std::lock_guard<std::mutex> lock(vdb_mutex_);
+    vdb_stop_ = true;
+  }
+  vdb_cv_.notify_all();
+  if (vdb_worker_.joinable()) {
+    vdb_worker_.join();
+  }
+}
+
+void SemanticRemapManager::snapshotVdbGrid()
+{
+  if (!vdb_publisher_ || vdb_rate_hz_ <= 0.0 ||
+    vdb_publisher_->get_subscription_count() == 0)
+  {
+    return;
+  }
+  const rclcpp::Time now = this->now();
+  if (last_vdb_publish_.nanoseconds() > 0 &&
+    (now - last_vdb_publish_).seconds() < 1.0 / vdb_rate_hz_)
+  {
+    return;
+  }
+  std::lock_guard<std::mutex> lock(vdb_mutex_);
+  if (vdb_busy_) {
+    return;  // the previous grid is still being serialised: skip this one
+  }
+  // Cheap in the cycle (copy-on-write leaves); pruning and compression run in
+  // the worker thread.
+  vdb_snapshot_ = semantic_map_->getGridPtr()->deepCopy();
+  vdb_legend_.clear();
+  for (const auto & [entities, id] : regions_register_->getAreas()) {
+    vdb_legend_[id] = entities;
+  }
+  vdb_busy_ = true;
+  last_vdb_publish_ = now;
+  vdb_cv_.notify_one();
+}
+
+void SemanticRemapManager::vdbWorker()
+{
+  while (true) {
+    openvdb::Int32Grid::Ptr grid;
+    std::map<int64_t, std::vector<std::string>> legend;
+    {
+      std::unique_lock<std::mutex> lock(vdb_mutex_);
+      vdb_cv_.wait(lock, [this] {return vdb_stop_ || vdb_busy_;});
+      if (vdb_stop_) {
+        return;
+      }
+      grid = vdb_snapshot_;
+      legend.swap(vdb_legend_);
+    }
+    try {
+      openvdb::tools::prune(grid->tree());
+      grid->setName("remap_world");
+      // only the legend entries of values present in the grid
+      std::map<int64_t, std::vector<std::string>> used;
+      for (auto it = grid->cbeginValueOn(); it; ++it) {
+        const auto l = legend.find(*it);
+        if (l != legend.end()) {
+          used.insert(*l);
+        }
+        if (used.size() == legend.size()) {
+          break;
+        }
+      }
+      vdb_msgs::msg::VdbGrid msg;
+      vdb_ros::toMsg(grid, msg, vdb_compression_);
+      vdb_ros::setLabels(msg, used);
+      msg.header.stamp = this->now();
+      msg.header.frame_id = fixed_frame_;
+      msg.sequence = vdb_sequence_++;
+      vdb_publisher_->publish(msg);
+    } catch (const std::exception & e) {
+      RCLCPP_ERROR(get_logger(), "VdbGrid publication failed: %s", e.what());
+    }
+    std::lock_guard<std::mutex> lock(vdb_mutex_);
+    vdb_snapshot_.reset();
+    vdb_busy_ = false;
+  }
+}
+
 void SemanticRemapManager::initialize()
 {
+  // latched: a display started later gets the last grid at once
+  vdb_publisher_ = this->create_publisher<vdb_msgs::msg::VdbGrid>(
+    "/remap/world/vdb", rclcpp::QoS(1).reliable().transient_local());
+  vdb_worker_ = std::thread(&SemanticRemapManager::vdbWorker, this);
+
   map_publisher_ = std::make_shared<vdb2pc::ros_utils::VDB2PCPublisher<openvdb::Int32Grid>>(
     shared_from_this(),
     "/remap/world",

@@ -24,6 +24,8 @@
   <depend>remap_plugin_base</depend>
   <depend>remap_regions_register</depend>
   <depend>vdb2pc</depend>
+  <depend>vdb_msgs</depend>
+  <depend>vdb_ros</depend>
 
   <exec_depend>rosidl_default_runtime</exec_depend>
 
